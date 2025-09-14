@@ -1,4 +1,5 @@
 import OpenAI from 'openai';
+import { head } from '@vercel/blob';
 
 export const runtime = 'edge';
 
@@ -8,6 +9,16 @@ export async function POST(request: Request): Promise<Response> {
 
   if (blobUrl) {
     try {
+      const { downloadUrl, contentType } = await head(blobUrl);
+      const blobResponse = await fetch(downloadUrl);
+      const arrayBuffer = await blobResponse.arrayBuffer();
+
+      if (arrayBuffer.byteLength === 0) {
+        throw new Error('Downloaded image file is empty.');
+      }
+
+      const base64 = Buffer.from(arrayBuffer).toString('base64');
+
       const openai = new OpenAI({
         apiKey: process.env.OPENAI_API_KEY,
       });
@@ -17,24 +28,43 @@ export async function POST(request: Request): Promise<Response> {
         messages: [
           {
             role: 'user',
-            content: 'Please return a simple greeting text.',
+            content: [
+              { type: 'text', text: 'Analyze this file and provide a summary.' },
+              {
+                type: 'image_url',
+                image_url: {
+                  url: `data:${contentType};base64,${base64}`,
+                },
+              },
+            ],
           },
         ],
-        max_tokens: 50,
-        stream: false,
+        max_tokens: 300,
+        stream: true,
       });
 
-      const fullContent = response.choices[0]?.message?.content || 'No content returned from OpenAI.';
+      const stream = new ReadableStream({
+        async start(controller) {
+          for await (const chunk of response) {
+            const content = chunk.choices[0]?.delta?.content || '';
+            if (content) {
+              controller.enqueue(content);
+            }
+          }
+          controller.close();
+        },
+      });
 
-      return new Response(JSON.stringify({ analysis: fullContent }), {
-        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      return new Response(stream, {
+        headers: { 'Content-Type': 'text/plain; charset=utf-8' },
       });
 
     } catch (error) {
       console.error('Error with OpenAI analysis:', error);
+      const { contentType } = await head(blobUrl);
       return new Response(
         JSON.stringify({
-          message: `Error with OpenAI analysis (Image processing bypassed): ${
+          message: `Error with OpenAI analysis (Content-Type: ${contentType}): ${
             (error as Error).message
           }`,
         }),
