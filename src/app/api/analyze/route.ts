@@ -1,5 +1,4 @@
 import OpenAI from 'openai';
-import { head } from '@vercel/blob';
 
 export const runtime = 'edge';
 
@@ -9,17 +8,6 @@ export async function POST(request: Request): Promise<Response> {
 
   if (blobUrl) {
     try {
-      // Commented out image processing code for testing OpenAI API connectivity
-      // const { downloadUrl, contentType } = await head(blobUrl);
-      // const blobResponse = await fetch(downloadUrl);
-      // const arrayBuffer = await blobResponse.arrayBuffer();
-
-      // if (arrayBuffer.byteLength === 0) {
-      //   throw new Error('Downloaded image file is empty.');
-      // }
-
-      // const base64 = Buffer.from(arrayBuffer).toString('base64');
-
       const openai = new OpenAI({
         apiKey: process.env.OPENAI_API_KEY,
       });
@@ -44,7 +32,6 @@ export async function POST(request: Request): Promise<Response> {
 
     } catch (error) {
       console.error('Error with OpenAI analysis:', error);
-      // const { contentType } = await head(blobUrl); // Commented out as image processing is bypassed
       return new Response(
         JSON.stringify({
           message: `Error with OpenAI analysis (Image processing bypassed): ${
@@ -61,3 +48,4 @@ export async function POST(request: Request): Promise<Response> {
   return new Response(JSON.stringify({ message: 'Invalid request' }), {
     status: 400,
   });
+}

@@ -9,7 +9,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     const jsonResponse = await handleUpload({
       body,
       request,
-      onBeforeGenerateToken: async (pathname: string) => {
+      onBeforeGenerateToken: async () => {
         // This is a placeholder for authorization logic.
         // In a real app, you would check if the user is authenticated.
         return {
