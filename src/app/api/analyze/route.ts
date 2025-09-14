@@ -74,8 +74,8 @@ export async function POST(request: Request): Promise<Response> {
                   {
                     type: 'image_url',
                     image_url: {
- //                     url: `data:${contentType};base64,${base64}`,                      
-                      url: `data:image/jpg;base64,${base64}`,
+                      url: `data:${contentType};base64,${base64}`,                      
+ //                     url: `data:image/jpg;base64,${base64}`,
                     },
                   },
                 ],

@@ -4,6 +4,28 @@ import { useState, useRef } from 'react';
 import { upload } from '@vercel/blob/client';
 import type { PutBlobResult } from '@vercel/blob';
 
+async function fetchAnalysis(blobUrl: string, setResult: (text: string) => void) {
+  const response = await fetch(`/api/analyze?url=${encodeURIComponent(blobUrl)}`, {
+    method: 'POST',
+  });
+
+  if (!response.body) {
+    setResult('No analysis result.');
+    return;
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let result = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    result += decoder.decode(value);
+    setResult(result); // Update UI as chunks arrive
+  }
+}
+
 export default function HomePage() {
   const inputFileRef = useRef<HTMLInputElement>(null);
   const [blob, setBlob] = useState<PutBlobResult | null>(null);
@@ -26,7 +48,7 @@ export default function HomePage() {
       setBlob(newBlob);
       setStatus('Analyzing...');
 
-      await analyzeImage(newBlob.url, setAnalysisResult);
+      await fetchAnalysis(newBlob.url, setAnalysisResult);
 
       setStatus('Analysis Complete');
 
@@ -35,28 +57,6 @@ export default function HomePage() {
       setStatus(`Error: ${(error as Error).message}`)
     }
   };
-
-  async function analyzeImage(blobUrl: string, setResult: (text: string) => void) {
-    const response = await fetch(`/api/analyze?url=${encodeURIComponent(blobUrl)}`, {
-      method: 'POST',
-    });
-
-    if (!response.body) {
-      setResult('No analysis result.');
-      return;
-    }
-
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    let result = '';
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      result += decoder.decode(value);
-      setResult(result); // Update UI as chunks arrive
-    }
-  }
 
   return (
     <main className="main-container">

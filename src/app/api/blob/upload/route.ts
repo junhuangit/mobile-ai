@@ -14,9 +14,10 @@ export async function POST(request: Request): Promise<NextResponse> {
         // In a real app, you would check if the user is authenticated.
         return {
           allowedContentTypes: [
-            'image/jpeg',
+            'image/jpeg', // covers .jpg and .jpeg
             'image/png',
             'image/gif',
+            'image/webp', // add webp support
             'text/plain',
             'application/pdf',
           ],
