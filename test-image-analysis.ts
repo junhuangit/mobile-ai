@@ -24,7 +24,7 @@ async function testImageAnalysis() {
     });
 
     // Read the test image file
-    const imagePath = path.join(process.cwd(), 'public', 'test-image.png');
+    const imagePath = path.join(process.cwd(), 'public', 'test-jpg.jpg');
     
     // Check if file exists
     if (!fs.existsSync(imagePath)) {
@@ -52,7 +52,7 @@ async function testImageAnalysis() {
             {
               type: 'image_url',
               image_url: {
-                url: `data:image/png;base64,${base64Image}`
+                url: `data:image/jpg;base64,${base64Image}`
               },
             },
           ],
