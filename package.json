@@ -6,14 +6,18 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:image": "npx tsx test-image-analysis.ts"
   },
   "dependencies": {
     "@vercel/blob": "^1.1.1",
+    "dotenv": "^17.2.2",
     "next": "15.5.3",
     "openai": "^5.20.2",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "svg-to-png": "^4.0.0",
+    "tsx": "^4.20.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

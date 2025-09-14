@@ -30,11 +30,18 @@ export default function HomePage() {
         method: 'POST',
       });
 
+      // Check if the response is an error (JSON)
+      const contentType = analysisResponse.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const errorData = await analysisResponse.json();
+        throw new Error(errorData.message || 'Analysis failed');
+      }
+
       if (!analysisResponse.body) {
         throw new Error('No response body from analysis.');
       }
 
-      // Stream the analysis
+      // Stream the analysis (text)
       const reader = analysisResponse.body.getReader();
       const decoder = new TextDecoder();
       while (true) {

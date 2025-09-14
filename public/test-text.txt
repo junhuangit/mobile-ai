@@ -1,0 +1,10 @@
+// Create a test text file
+This is a sample text file for testing the AI analysis functionality.
+It contains multiple lines of text to verify that the system can handle text files correctly.
+
+The file is designed to test:
+1. Text file upload functionality
+2. Text content analysis
+3. Proper handling of different file types
+
+This concludes the test file content.

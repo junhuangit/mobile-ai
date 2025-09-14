@@ -1,0 +1,28 @@
+2025-09-14T07:22:48.319Z 🔑 Key event received: {
+  "name": "undefined",
+  "sequence": "\u001b[O",
+  "ctrl": false,
+  "inputMode": "idle",
+  "continuousCount": 0
+}
+2025-09-14T07:22:57.017Z 🔑 Key event received: {
+  "name": "undefined",
+  "sequence": "\u001b[I",
+  "ctrl": false,
+  "inputMode": "idle",
+  "continuousCount": 0
+}
+2025-09-14T07:23:08.210Z 🔑 Key event received: {
+  "name": "c",
+  "sequence": "\u0003",
+  "ctrl": true,
+  "inputMode": "idle",
+  "continuousCount": 0
+}
+2025-09-14T07:23:09.038Z 🔑 Key event received: {
+  "name": "c",
+  "sequence": "\u0003",
+  "ctrl": true,
+  "inputMode": "idle",
+  "continuousCount": 1
+}
