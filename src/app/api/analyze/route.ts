@@ -134,13 +134,15 @@ ${truncatedContent}`,
         },
       });
 
-      // Delete the blob after analysis
-      try {
-        await del(blobUrl);
-        console.log(`Blob deleted: ${blobUrl}`);
-      } catch (deleteError) {
-        console.error(`Failed to delete blob: ${blobUrl}`, deleteError);
-      }
+      // Schedule deletion of the blob after 3 minutes
+      setTimeout(async () => {
+        try {
+          await del(blobUrl);
+          console.log(`Blob deleted after 3 minutes: ${blobUrl}`);
+        } catch (deleteError) {
+          console.error(`Failed to delete blob after 3 minutes: ${blobUrl}`, deleteError);
+        }
+      }, 3 * 60 * 1000); // 3 minutes
 
       return new Response(stream, {
         headers: { 'Content-Type': 'text/plain; charset=utf-8' },

@@ -1,4 +1,4 @@
-import { handleUpload, type HandleUploadBody } from '@vercel/blob/client';
+import { handleUpload, type HandleUploadBody, generateUploadUrl } from '@vercel/blob/client';
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request): Promise<NextResponse> {
@@ -39,4 +39,16 @@ export async function POST(request: Request): Promise<NextResponse> {
       { status: 400 },
     );
   }
+}
+
+export async function GET(request: Request): Promise<NextResponse> {
+  // Generate a temporary upload URL for the frontend
+  const { searchParams } = new URL(request.url);
+  const filename = searchParams.get('filename') || `upload-${Date.now()}`;
+  const { url, token } = await generateUploadUrl({
+    pathname: filename,
+    contentType: 'image/jpeg', // or let frontend specify
+    expiresIn: 5 * 60, // 5 minutes, adjust as needed
+  });
+  return NextResponse.json({ url, token });
 }
