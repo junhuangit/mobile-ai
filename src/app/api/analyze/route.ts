@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import { head } from '@vercel/blob';
+import { head, del } from '@vercel/blob'; // import del
 
 export const runtime = 'edge';
 
@@ -121,6 +121,7 @@ ${truncatedContent}`,
         );
       }
 
+      // Stream response to client
       const stream = new ReadableStream({
         async start(controller) {
           for await (const chunk of response) {
@@ -132,6 +133,14 @@ ${truncatedContent}`,
           controller.close();
         },
       });
+
+      // Delete the blob after analysis
+      try {
+        await del(blobUrl);
+        console.log(`Blob deleted: ${blobUrl}`);
+      } catch (deleteError) {
+        console.error(`Failed to delete blob: ${blobUrl}`, deleteError);
+      }
 
       return new Response(stream, {
         headers: { 'Content-Type': 'text/plain; charset=utf-8' },
