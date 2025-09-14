@@ -58,6 +58,11 @@ export default function HomePage() {
     }
   };
 
+  const handleAnalyze = async (blobUrl: string) => {
+    setAnalysisResult('Analyzing...');
+    await fetchAnalysis(blobUrl, setAnalysisResult);
+  };
+
   return (
     <main className="main-container">
       <div className="content-wrapper">
