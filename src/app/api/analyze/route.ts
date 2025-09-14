@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import { get } from '@vercel/blob';
+import { head } from '@vercel/blob';
 
 export const runtime = 'edge';
 
@@ -9,10 +9,10 @@ export async function POST(request: Request): Promise<Response> {
 
   if (blobUrl) {
     try {
-      const blob = await get(blobUrl);
-      const arrayBuffer = await blob.arrayBuffer();
+      const { downloadUrl, contentType } = await head(blobUrl);
+      const blobResponse = await fetch(downloadUrl);
+      const arrayBuffer = await blobResponse.arrayBuffer();
       const base64 = Buffer.from(arrayBuffer).toString('base64');
-      const contentType = blob.contentType;
 
       const openai = new OpenAI({
         apiKey: process.env.OPENAI_API_KEY,
