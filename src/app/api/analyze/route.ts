@@ -1,4 +1,3 @@
-import { put } from '@vercel/blob';
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
@@ -6,25 +5,8 @@ export const runtime = 'edge';
 
 export async function POST(request: Request): Promise<Response> {
   const { searchParams } = new URL(request.url);
-  const filename = searchParams.get('filename');
   const blobUrl = searchParams.get('url');
 
-  // Mode 1: Generate a pre-signed URL for client-side upload
-  if (filename) {
-    try {
-      const blob = await put(filename, request.body!, {
-        access: 'public',
-      });
-      return NextResponse.json(blob);
-    } catch (error) {
-      console.error('Error creating blob:', error);
-      return new Response(JSON.stringify({ message: 'Error creating blob' }), {
-        status: 500,
-      });
-    }
-  }
-  
-  // Mode 2: Trigger OpenAI analysis with the blob URL
   if (blobUrl) {
     try {
       const openai = new OpenAI({

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import { upload } from '@vercel/blob/client';
 import type { PutBlobResult } from '@vercel/blob';
 
 export default function HomePage() {
@@ -17,18 +18,10 @@ export default function HomePage() {
     setStatus('Uploading...');
 
     try {
-      const response = await fetch(`/api/analyze?filename=${file.name}`, {
-        method: 'POST',
-        body: file,
+      const newBlob = await upload(file.name, file, {
+        access: 'public',
+        handleUploadUrl: '/api/blob/upload',
       });
-
-      const newBlob = (await response.json()) as PutBlobResult;
-
-      if (!newBlob.url) {
-        setStatus('Error: File upload did not return a URL.');
-        setAnalysisResult(JSON.stringify(newBlob, null, 2)); // Show what was returned
-        return;
-      }
 
       setBlob(newBlob);
       setStatus('Analyzing...');
