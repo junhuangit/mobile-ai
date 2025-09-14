@@ -53,27 +53,10 @@ export async function POST(request: Request): Promise<Response> {
 
       const stream = new ReadableStream({
         async start(controller) {
-          const reader = response.body!.getReader();
-          const decoder = new TextDecoder();
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) {
-              break;
-            }
-            const chunk = decoder.decode(value);
-            const lines = chunk.split('\n\n');
-            const parsedLines = lines
-              .map((line) => line.replace(/^data: /, '').trim())
-              .filter((line) => line !== '' && line !== '[DONE]')
-              .map((line) => JSON.parse(line));
-
-            for (const parsedLine of parsedLines) {
-              const { choices } = parsedLine;
-              const { delta } = choices[0];
-              const { content } = delta;
-              if (content) {
-                controller.enqueue(content);
-              }
+          for await (const chunk of response) {
+            const content = chunk.choices[0]?.delta?.content || '';
+            if (content) {
+              controller.enqueue(content);
             }
           }
           controller.close();
