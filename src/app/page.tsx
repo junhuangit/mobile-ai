@@ -26,30 +26,8 @@ export default function HomePage() {
       setBlob(newBlob);
       setStatus('Analyzing...');
 
-      const analysisResponse = await fetch(`/api/analyze?url=${newBlob.url}`, {
-        method: 'POST',
-      });
+      await analyzeImage(newBlob.url, setAnalysisResult);
 
-      // Check if the response is an error (JSON)
-      const contentType = analysisResponse.headers.get('content-type');
-      if (contentType && contentType.includes('application/json')) {
-        const errorData = await analysisResponse.json();
-        throw new Error(errorData.message || 'Analysis failed');
-      }
-
-      if (!analysisResponse.body) {
-        throw new Error('No response body from analysis.');
-      }
-
-      // Stream the analysis (text)
-      const reader = analysisResponse.body.getReader();
-      const decoder = new TextDecoder();
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
-        setAnalysisResult(prev => prev + chunk);
-      }
       setStatus('Analysis Complete');
 
     } catch (error) {
@@ -57,6 +35,28 @@ export default function HomePage() {
       setStatus(`Error: ${(error as Error).message}`)
     }
   };
+
+  async function analyzeImage(blobUrl: string, setResult: (text: string) => void) {
+    const response = await fetch(`/api/analyze?url=${encodeURIComponent(blobUrl)}`, {
+      method: 'POST',
+    });
+
+    if (!response.body) {
+      setResult('No analysis result.');
+      return;
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let result = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      result += decoder.decode(value);
+      setResult(result); // Update UI as chunks arrive
+    }
+  }
 
   return (
     <main className="main-container">
