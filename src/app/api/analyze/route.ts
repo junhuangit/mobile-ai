@@ -9,15 +9,16 @@ export async function POST(request: Request): Promise<Response> {
 
   if (blobUrl) {
     try {
-      const { downloadUrl, contentType } = await head(blobUrl);
-      const blobResponse = await fetch(downloadUrl);
-      const arrayBuffer = await blobResponse.arrayBuffer();
+      // Commented out image processing code for testing OpenAI API connectivity
+      // const { downloadUrl, contentType } = await head(blobUrl);
+      // const blobResponse = await fetch(downloadUrl);
+      // const arrayBuffer = await blobResponse.arrayBuffer();
 
-      if (arrayBuffer.byteLength === 0) {
-        throw new Error('Downloaded image file is empty.');
-      }
+      // if (arrayBuffer.byteLength === 0) {
+      //   throw new Error('Downloaded image file is empty.');
+      // }
 
-      const base64 = Buffer.from(arrayBuffer).toString('base64');
+      // const base64 = Buffer.from(arrayBuffer).toString('base64');
 
       const openai = new OpenAI({
         apiKey: process.env.OPENAI_API_KEY,
@@ -28,18 +29,10 @@ export async function POST(request: Request): Promise<Response> {
         messages: [
           {
             role: 'user',
-            content: [
-              { type: 'text', text: 'Analyze this file and provide a summary.' },
-              {
-                type: 'image_url',
-                image_url: {
-                  url: `data:${contentType};base64,${base64}`,
-                },
-              },
-            ],
+            content: 'Please return a simple greeting text.',
           },
         ],
-        max_tokens: 300,
+        max_tokens: 50,
         stream: false,
       });
 
@@ -51,10 +44,10 @@ export async function POST(request: Request): Promise<Response> {
 
     } catch (error) {
       console.error('Error with OpenAI analysis:', error);
-      const { contentType } = await head(blobUrl);
+      // const { contentType } = await head(blobUrl); // Commented out as image processing is bypassed
       return new Response(
         JSON.stringify({
-          message: `Error with OpenAI analysis (Content-Type: ${contentType}): ${
+          message: `Error with OpenAI analysis (Image processing bypassed): ${
             (error as Error).message
           }`,
         }),
@@ -68,4 +61,3 @@ export async function POST(request: Request): Promise<Response> {
   return new Response(JSON.stringify({ message: 'Invalid request' }), {
     status: 400,
   });
-}
