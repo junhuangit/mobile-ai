@@ -1,4 +1,5 @@
 import OpenAI from 'openai';
+import { get } from '@vercel/blob';
 
 export const runtime = 'edge';
 
@@ -8,9 +9,15 @@ export async function POST(request: Request): Promise<Response> {
 
   if (blobUrl) {
     try {
+      const blob = await get(blobUrl);
+      const arrayBuffer = await blob.arrayBuffer();
+      const base64 = Buffer.from(arrayBuffer).toString('base64');
+      const contentType = blob.contentType;
+
       const openai = new OpenAI({
         apiKey: process.env.OPENAI_API_KEY,
       });
+
       const response = await openai.chat.completions.create({
         model: 'gpt-4-turbo',
         messages: [
@@ -21,7 +28,7 @@ export async function POST(request: Request): Promise<Response> {
               {
                 type: 'image_url',
                 image_url: {
-                  url: blobUrl,
+                  url: `data:${contentType};base64,${base64}`,
                 },
               },
             ],
