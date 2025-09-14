@@ -30,20 +30,17 @@ export default function HomePage() {
         method: 'POST',
       });
 
-      if (!analysisResponse.body) {
-        throw new Error('No response body from analysis.');
+      const analysisData = await analysisResponse.json();
+      if (analysisData.analysis) {
+        setAnalysisResult(analysisData.analysis);
+        setStatus('Analysis Complete');
+      } else if (analysisData.message) {
+        setAnalysisResult(analysisData.message);
+        setStatus('Analysis Error');
+      } else {
+        setAnalysisResult('Unexpected response from analysis API.');
+        setStatus('Analysis Error');
       }
-
-      // Stream the analysis
-      const reader = analysisResponse.body.getReader();
-      const decoder = new TextDecoder();
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
-        setAnalysisResult(prev => prev + chunk);
-      }
-      setStatus('Analysis Complete');
 
     } catch (error) {
       console.error('An error occurred:', error);

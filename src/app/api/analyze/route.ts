@@ -35,23 +35,13 @@ export async function POST(request: Request): Promise<Response> {
           },
         ],
         max_tokens: 300,
-        stream: true,
+        stream: false,
       });
 
-      const stream = new ReadableStream({
-        async start(controller) {
-          for await (const chunk of response) {
-            const content = chunk.choices[0]?.delta?.content || '';
-            if (content) {
-              controller.enqueue(content);
-            }
-          }
-          controller.close();
-        },
-      });
+      const fullContent = response.choices[0]?.message?.content || 'No content returned from OpenAI.';
 
-      return new Response(stream, {
-        headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+      return new Response(JSON.stringify({ analysis: fullContent }), {
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
       });
 
     } catch (error) {
