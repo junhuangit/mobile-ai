@@ -31,7 +31,7 @@ export async function POST(request: Request): Promise<Response> {
         apiKey: process.env.OPENAI_API_KEY,
       });
       const response = await openai.chat.completions.create({
-        model: 'gpt-4-vision-preview',
+        model: 'gpt-4-turbo',
         messages: [
           {
             role: 'user',
@@ -68,9 +68,12 @@ export async function POST(request: Request): Promise<Response> {
 
     } catch (error) {
       console.error('Error with OpenAI analysis:', error);
-      return new Response(JSON.stringify({ message: 'Error with OpenAI analysis' }), {
-        status: 500,
-      });
+      return new Response(
+        JSON.stringify({ message: `Error with OpenAI analysis: ${(error as Error).message}` }),
+        {
+          status: 500,
+        },
+      );
     }
   }
 
