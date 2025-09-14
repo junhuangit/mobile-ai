@@ -28,7 +28,7 @@ export async function POST(request: Request): Promise<Response> {
               {
                 type: 'image_url',
                 image_url: {
-                  url: `data:image/jpeg;base64,${base64}`,
+                  url: `data:${contentType};base64,${base64}`,
                 },
               },
             ],
@@ -56,8 +56,13 @@ export async function POST(request: Request): Promise<Response> {
 
     } catch (error) {
       console.error('Error with OpenAI analysis:', error);
+      const { contentType } = await head(blobUrl);
       return new Response(
-        JSON.stringify({ message: `Error with OpenAI analysis: ${(error as Error).message}` }),
+        JSON.stringify({
+          message: `Error with OpenAI analysis (Content-Type: ${contentType}): ${
+            (error as Error).message
+          }`,
+        }),
         {
           status: 500,
         },
