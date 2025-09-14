@@ -4,10 +4,6 @@ import OpenAI from 'openai';
 
 export const runtime = 'edge';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 export async function POST(request: Request): Promise<Response> {
   const { searchParams } = new URL(request.url);
   const filename = searchParams.get('filename');
@@ -31,6 +27,9 @@ export async function POST(request: Request): Promise<Response> {
   // Mode 2: Trigger OpenAI analysis with the blob URL
   if (blobUrl) {
     try {
+      const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+      });
       const response = await openai.chat.completions.create({
         model: 'gpt-4-vision-preview',
         messages: [
