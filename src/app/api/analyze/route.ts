@@ -1,4 +1,4 @@
-import { put, head } from '@vercel/blob';
+import { put } from '@vercel/blob';
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 

@@ -37,12 +37,10 @@ export default function HomePage() {
       // Stream the analysis
       const reader = analysisResponse.body.getReader();
       const decoder = new TextDecoder();
-      let result = '';
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
         const chunk = decoder.decode(value, { stream: true });
-        result += chunk;
         setAnalysisResult(prev => prev + chunk);
       }
       setStatus('Analysis Complete');
@@ -57,7 +55,7 @@ export default function HomePage() {
     <main className="main-container">
       <div className="content-wrapper">
         <div className="api-key-warning">
-          <p><strong>Action Required:</strong> Before this works, you must add your OpenAI API Key and Vercel Blob Token to your Vercel project's environment variables. Name them `OPENAI_API_KEY` and `BLOB_READ_WRITE_TOKEN`.</p>
+          <p><strong>Action Required:</strong> Before this works, you must add your OpenAI API Key and Vercel Blob Token to your Vercel project&apos;s environment variables. Name them `OPENAI_API_KEY` and `BLOB_READ_WRITE_TOKEN`.</p>
         </div>
 
         <h1 className="title">AI File Analysis</h1>
