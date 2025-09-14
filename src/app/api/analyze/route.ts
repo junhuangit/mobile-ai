@@ -12,6 +12,11 @@ export async function POST(request: Request): Promise<Response> {
       const { downloadUrl, contentType } = await head(blobUrl);
       const blobResponse = await fetch(downloadUrl);
       const arrayBuffer = await blobResponse.arrayBuffer();
+
+      if (arrayBuffer.byteLength === 0) {
+        throw new Error('Downloaded image file is empty.');
+      }
+
       const base64 = Buffer.from(arrayBuffer).toString('base64');
 
       const openai = new OpenAI({
