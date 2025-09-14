@@ -23,6 +23,13 @@ export default function HomePage() {
       });
 
       const newBlob = (await response.json()) as PutBlobResult;
+
+      if (!newBlob.url) {
+        setStatus('Error: File upload did not return a URL.');
+        setAnalysisResult(JSON.stringify(newBlob, null, 2)); // Show what was returned
+        return;
+      }
+
       setBlob(newBlob);
       setStatus('Analyzing...');
 
