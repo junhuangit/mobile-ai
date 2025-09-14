@@ -20,6 +20,7 @@ export default function HomePage() {
     try {
       const newBlob = await upload(file.name, file, {
         access: 'public',
+        handleUploadUrl: '/api/blob/upload',
       });
 
       setBlob(newBlob);
